@@ -66,8 +66,8 @@ document.getElementById('searchTaxPayerForm').addEventListener('submit', async (
         const result = await backend.searchTaxPayer(searchTid);
         const searchResult = document.getElementById('searchResult');
 
-        if (result && result.length > 0) {
-            const taxPayer = result[0];
+        if (result) {
+            const taxPayer = result;
             searchResult.innerHTML = `
                 <h3>Search Result:</h3>
                 <p><strong>TID:</strong> ${taxPayer.tid}</p>
@@ -117,7 +117,7 @@ async function editTaxPayer(e) {
             document.getElementById('editSpyShot').value = taxPayer.spyShot || '';
             document.getElementById('editModal').style.display = 'block';
         } else {
-            alert('Failed to load TaxPayer information. Please try again.');
+            alert('Failed to load TaxPayer information. TaxPayer not found.');
         }
     } catch (error) {
         console.error('Error loading tax payer for edit:', error);
