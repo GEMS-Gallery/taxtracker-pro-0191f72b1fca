@@ -11,6 +11,6 @@ service : {
   databaseCleanup: () -> (nat);
   deleteTaxPayer: (text) -> (bool);
   getAllTaxPayers: () -> (vec TaxPayer) query;
-  searchTaxPayer: (text) -> (opt TaxPayer) query;
+  searchTaxPayer: (text) -> (TaxPayer) query;
   updateTaxPayer: (text, text, text, text, opt text) -> (bool);
 }

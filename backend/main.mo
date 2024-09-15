@@ -51,10 +51,24 @@ actor {
   };
 
   // Function to search for a TaxPayer by TID
-  public query func searchTaxPayer(tid: Text) : async ?TaxPayer {
+  public query func searchTaxPayer(tid: Text) : async TaxPayer {
     let result = taxPayers.get(trim(tid));
-    Debug.print("Searched for taxpayer with TID " # tid # ": " # debug_show(result));
-    result
+    switch (result) {
+      case (null) {
+        Debug.print("Taxpayer not found with TID " # tid);
+        {
+          tid = "";
+          firstName = "";
+          lastName = "";
+          address = "";
+          spyShot = null;
+        }
+      };
+      case (?taxpayer) {
+        Debug.print("Found taxpayer with TID " # tid # ": " # debug_show(taxpayer));
+        taxpayer
+      };
+    }
   };
 
   // Function to get all TaxPayer records

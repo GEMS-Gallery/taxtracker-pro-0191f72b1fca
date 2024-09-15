@@ -17,7 +17,7 @@ export interface _SERVICE {
   'databaseCleanup' : ActorMethod<[], bigint>,
   'deleteTaxPayer' : ActorMethod<[string], boolean>,
   'getAllTaxPayers' : ActorMethod<[], Array<TaxPayer>>,
-  'searchTaxPayer' : ActorMethod<[string], [] | [TaxPayer]>,
+  'searchTaxPayer' : ActorMethod<[string], TaxPayer>,
   'updateTaxPayer' : ActorMethod<
     [string, string, string, string, [] | [string]],
     boolean

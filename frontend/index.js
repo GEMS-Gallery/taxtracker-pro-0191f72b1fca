@@ -63,11 +63,10 @@ document.getElementById('searchTaxPayerForm').addEventListener('submit', async (
     e.preventDefault();
     const searchTid = trim(document.getElementById('searchTid').value);
     try {
-        const result = await backend.searchTaxPayer(searchTid);
+        const taxPayer = await backend.searchTaxPayer(searchTid);
         const searchResult = document.getElementById('searchResult');
 
-        if (result) {
-            const taxPayer = result;
+        if (taxPayer.tid !== "") {
             searchResult.innerHTML = `
                 <h3>Search Result:</h3>
                 <p><strong>TID:</strong> ${taxPayer.tid}</p>
@@ -107,16 +106,15 @@ async function deleteTaxPayer(e) {
 async function editTaxPayer(e) {
     const tid = trim(e.target.getAttribute('data-tid'));
     try {
-        const result = await backend.searchTaxPayer(tid);
-        console.log('Search result:', result); // Debug log
-        if (result) {
-            const taxPayer = result;
-            console.log('TaxPayer data:', taxPayer); // Debug log
+        const taxPayer = await backend.searchTaxPayer(tid);
+        console.log('TaxPayer data:', taxPayer); // Debug log
+
+        if (taxPayer.tid !== "") {
             document.getElementById('editTid').value = taxPayer.tid;
             document.getElementById('editFirstName').value = taxPayer.firstName;
             document.getElementById('editLastName').value = taxPayer.lastName;
             document.getElementById('editAddress').value = taxPayer.address;
-            document.getElementById('editSpyShot').value = taxPayer.spyShot[0] || '';
+            document.getElementById('editSpyShot').value = taxPayer.spyShot || '';
             document.getElementById('editModal').style.display = 'block';
         } else {
             alert('Failed to load TaxPayer information. TaxPayer not found.');
