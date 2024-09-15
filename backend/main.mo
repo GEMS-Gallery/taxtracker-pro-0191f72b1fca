@@ -1,6 +1,7 @@
 import Bool "mo:base/Bool";
 import Func "mo:base/Func";
 import Hash "mo:base/Hash";
+import Nat "mo:base/Nat";
 
 import HashMap "mo:base/HashMap";
 import Text "mo:base/Text";
@@ -94,5 +95,22 @@ actor {
         true
       };
     };
+  };
+
+  // Function to perform database cleanup
+  public func databaseCleanup() : async Nat {
+    var deletedCount = 0;
+    let entriesToDelete = Array.filter<(Text, TaxPayer)>(
+      Iter.toArray(taxPayers.entries()),
+      func((tid, _)) { Text.contains(tid, #text " ") }
+    );
+
+    for ((tid, _) in entriesToDelete.vals()) {
+      taxPayers.delete(tid);
+      deletedCount += 1;
+    };
+
+    Debug.print("Database cleanup completed. Deleted " # debug_show(deletedCount) # " records.");
+    deletedCount
   };
 }

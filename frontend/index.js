@@ -144,6 +144,20 @@ document.getElementById('editTaxPayerForm').addEventListener('submit', async (e)
     }
 });
 
+// Function to perform database cleanup
+document.getElementById('cleanupButton').addEventListener('click', async () => {
+    if (confirm('Are you sure you want to perform database cleanup? This will delete all records with spaces in the TID.')) {
+        try {
+            const deletedCount = await backend.databaseCleanup();
+            alert(`Database cleanup completed. ${deletedCount} record(s) were deleted.`);
+            displayTaxPayers();
+        } catch (error) {
+            console.error('Error during database cleanup:', error);
+            alert('Failed to perform database cleanup. Please try again.');
+        }
+    }
+});
+
 // Close modal when clicking on <span> (x)
 document.querySelector('.close').addEventListener('click', () => {
     document.getElementById('editModal').style.display = 'none';
