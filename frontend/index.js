@@ -12,7 +12,6 @@ async function displayTaxPayers() {
             <p><strong>TID:</strong> ${taxPayer.tid}</p>
             <p><strong>Name:</strong> ${taxPayer.firstName} ${taxPayer.lastName}</p>
             <p><strong>Address:</strong> ${taxPayer.address}</p>
-            <hr>
         `;
         taxPayerList.appendChild(div);
     });
