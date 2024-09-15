@@ -3,13 +3,14 @@ type TaxPayer =
    address: text;
    firstName: text;
    lastName: text;
+   spyShot: opt text;
    tid: text;
  };
 service : {
-  addTaxPayer: (text, text, text, text) -> ();
+  addTaxPayer: (text, text, text, text, opt text) -> ();
   databaseCleanup: () -> (nat);
   deleteTaxPayer: (text) -> (bool);
   getAllTaxPayers: () -> (vec TaxPayer) query;
   searchTaxPayer: (text) -> (opt TaxPayer) query;
-  updateTaxPayer: (text, text, text, text) -> (bool);
+  updateTaxPayer: (text, text, text, text, opt text) -> (bool);
 }

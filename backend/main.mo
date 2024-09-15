@@ -16,6 +16,7 @@ actor {
     firstName: Text;
     lastName: Text;
     address: Text;
+    spyShot: ?Text;
   };
 
   // Create a stable variable to store the TaxPayer records
@@ -37,12 +38,13 @@ actor {
   };
 
   // Function to add a new TaxPayer record
-  public func addTaxPayer(tid: Text, firstName: Text, lastName: Text, address: Text) : async () {
+  public func addTaxPayer(tid: Text, firstName: Text, lastName: Text, address: Text, spyShot: ?Text) : async () {
     let newTaxPayer : TaxPayer = {
       tid = trim(tid);
       firstName = trim(firstName);
       lastName = trim(lastName);
       address = trim(address);
+      spyShot = spyShot;
     };
     taxPayers.put(trim(tid), newTaxPayer);
     Debug.print("Added new taxpayer: " # debug_show(newTaxPayer));
@@ -77,7 +79,7 @@ actor {
   };
 
   // Function to update a TaxPayer record
-  public func updateTaxPayer(tid: Text, firstName: Text, lastName: Text, address: Text) : async Bool {
+  public func updateTaxPayer(tid: Text, firstName: Text, lastName: Text, address: Text, spyShot: ?Text) : async Bool {
     switch (taxPayers.get(trim(tid))) {
       case null { 
         Debug.print("Failed to update taxpayer with TID " # tid # ": not found");
@@ -89,6 +91,7 @@ actor {
           firstName = trim(firstName);
           lastName = trim(lastName);
           address = trim(address);
+          spyShot = spyShot;
         };
         taxPayers.put(trim(tid), updatedTaxPayer);
         Debug.print("Updated taxpayer: " # debug_show(updatedTaxPayer));

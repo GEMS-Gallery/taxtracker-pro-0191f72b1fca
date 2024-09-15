@@ -18,6 +18,7 @@ async function displayTaxPayers() {
                 <p><strong>TID:</strong> ${taxPayer.tid}</p>
                 <p><strong>Name:</strong> ${taxPayer.firstName} ${taxPayer.lastName}</p>
                 <p><strong>Address:</strong> ${taxPayer.address}</p>
+                ${taxPayer.spyShot ? `<img src="${taxPayer.spyShot}" alt="Spy Shot" class="spy-shot">` : ''}
                 <button class="edit-btn" data-tid="${taxPayer.tid}">Edit</button>
                 <button class="delete-btn" data-tid="${taxPayer.tid}">Delete</button>
             `;
@@ -44,9 +45,10 @@ document.getElementById('addTaxPayerForm').addEventListener('submit', async (e) 
     const firstName = trim(document.getElementById('firstName').value);
     const lastName = trim(document.getElementById('lastName').value);
     const address = trim(document.getElementById('address').value);
+    const spyShot = trim(document.getElementById('spyShot').value) || null;
 
     try {
-        await backend.addTaxPayer(tid, firstName, lastName, address);
+        await backend.addTaxPayer(tid, firstName, lastName, address, spyShot);
         alert('TaxPayer added successfully!');
         e.target.reset();
         displayTaxPayers();
@@ -64,13 +66,14 @@ document.getElementById('searchTaxPayerForm').addEventListener('submit', async (
         const result = await backend.searchTaxPayer(searchTid);
         const searchResult = document.getElementById('searchResult');
 
-        if (result && result.length > 0) {
-            const taxPayer = result[0];
+        if (result) {
+            const taxPayer = result;
             searchResult.innerHTML = `
                 <h3>Search Result:</h3>
                 <p><strong>TID:</strong> ${taxPayer.tid}</p>
                 <p><strong>Name:</strong> ${taxPayer.firstName} ${taxPayer.lastName}</p>
                 <p><strong>Address:</strong> ${taxPayer.address}</p>
+                ${taxPayer.spyShot ? `<img src="${taxPayer.spyShot}" alt="Spy Shot" class="spy-shot">` : ''}
             `;
         } else {
             searchResult.innerHTML = '<p>No TaxPayer found with the given TID.</p>';
@@ -105,12 +108,13 @@ async function editTaxPayer(e) {
     const tid = trim(e.target.getAttribute('data-tid'));
     try {
         const result = await backend.searchTaxPayer(tid);
-        if (result && result.length > 0) {
-            const taxPayer = result[0];
+        if (result) {
+            const taxPayer = result;
             document.getElementById('editTid').value = taxPayer.tid;
             document.getElementById('editFirstName').value = taxPayer.firstName;
             document.getElementById('editLastName').value = taxPayer.lastName;
             document.getElementById('editAddress').value = taxPayer.address;
+            document.getElementById('editSpyShot').value = taxPayer.spyShot || '';
             document.getElementById('editModal').style.display = 'block';
         } else {
             alert('Failed to load TaxPayer information. Please try again.');
@@ -128,9 +132,10 @@ document.getElementById('editTaxPayerForm').addEventListener('submit', async (e)
     const firstName = trim(document.getElementById('editFirstName').value);
     const lastName = trim(document.getElementById('editLastName').value);
     const address = trim(document.getElementById('editAddress').value);
+    const spyShot = trim(document.getElementById('editSpyShot').value) || null;
 
     try {
-        const result = await backend.updateTaxPayer(tid, firstName, lastName, address);
+        const result = await backend.updateTaxPayer(tid, firstName, lastName, address, spyShot);
         if (result) {
             alert('TaxPayer updated successfully!');
             document.getElementById('editModal').style.display = 'none';
