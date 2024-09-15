@@ -135,17 +135,19 @@ document.getElementById('editTaxPayerForm').addEventListener('submit', async (e)
     const spyShot = trim(document.getElementById('editSpyShot').value) || null;
 
     try {
+        console.log('Updating tax payer with data:', { tid, firstName, lastName, address, spyShot });
         const result = await backend.updateTaxPayer(tid, firstName, lastName, address, spyShot);
+        console.log('Update result:', result);
         if (result) {
             alert('TaxPayer updated successfully!');
             document.getElementById('editModal').style.display = 'none';
             displayTaxPayers();
         } else {
-            alert('Failed to update TaxPayer. Please try again.');
+            alert('Failed to update TaxPayer. The TaxPayer may not exist.');
         }
     } catch (error) {
         console.error('Error updating tax payer:', error);
-        alert('Failed to update tax payer. Please try again.');
+        alert('An error occurred while updating the tax payer. Please try again.');
     }
 });
 
