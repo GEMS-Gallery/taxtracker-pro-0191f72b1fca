@@ -1,3 +1,4 @@
+import Bool "mo:base/Bool";
 import Func "mo:base/Func";
 import Hash "mo:base/Hash";
 
@@ -47,5 +48,30 @@ actor {
   // Function to get all TaxPayer records
   public query func getAllTaxPayers() : async [TaxPayer] {
     Iter.toArray(taxPayers.vals())
+  };
+
+  // Function to delete a TaxPayer record
+  public func deleteTaxPayer(tid: Text) : async Bool {
+    switch (taxPayers.remove(tid)) {
+      case null { false };
+      case (?_) { true };
+    }
+  };
+
+  // Function to update a TaxPayer record
+  public func updateTaxPayer(tid: Text, firstName: Text, lastName: Text, address: Text) : async Bool {
+    switch (taxPayers.get(tid)) {
+      case null { false };
+      case (?_) {
+        let updatedTaxPayer : TaxPayer = {
+          tid = tid;
+          firstName = firstName;
+          lastName = lastName;
+          address = address;
+        };
+        taxPayers.put(tid, updatedTaxPayer);
+        true
+      };
+    }
   };
 }

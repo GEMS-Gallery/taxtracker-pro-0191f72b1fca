@@ -12,8 +12,18 @@ async function displayTaxPayers() {
             <p><strong>TID:</strong> ${taxPayer.tid}</p>
             <p><strong>Name:</strong> ${taxPayer.firstName} ${taxPayer.lastName}</p>
             <p><strong>Address:</strong> ${taxPayer.address}</p>
+            <button class="edit-btn" data-tid="${taxPayer.tid}">Edit</button>
+            <button class="delete-btn" data-tid="${taxPayer.tid}">Delete</button>
         `;
         taxPayerList.appendChild(div);
+    });
+
+    // Add event listeners for edit and delete buttons
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', editTaxPayer);
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', deleteTaxPayer);
     });
 }
 
@@ -47,6 +57,65 @@ document.getElementById('searchTaxPayerForm').addEventListener('submit', async (
         `;
     } else {
         searchResult.innerHTML = '<p>No TaxPayer found with the given TID.</p>';
+    }
+});
+
+// Function to delete a tax payer
+async function deleteTaxPayer(e) {
+    const tid = e.target.getAttribute('data-tid');
+    if (confirm(`Are you sure you want to delete the tax payer with TID: ${tid}?`)) {
+        const result = await backend.deleteTaxPayer(tid);
+        if (result) {
+            alert('TaxPayer deleted successfully!');
+            displayTaxPayers();
+        } else {
+            alert('Failed to delete TaxPayer. Please try again.');
+        }
+    }
+}
+
+// Function to edit a tax payer
+async function editTaxPayer(e) {
+    const tid = e.target.getAttribute('data-tid');
+    const taxPayer = await backend.searchTaxPayer(tid);
+    if (taxPayer) {
+        document.getElementById('editTid').value = taxPayer.tid;
+        document.getElementById('editFirstName').value = taxPayer.firstName;
+        document.getElementById('editLastName').value = taxPayer.lastName;
+        document.getElementById('editAddress').value = taxPayer.address;
+        document.getElementById('editModal').style.display = 'block';
+    } else {
+        alert('Failed to load TaxPayer information. Please try again.');
+    }
+}
+
+// Function to update a tax payer
+document.getElementById('editTaxPayerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const tid = document.getElementById('editTid').value;
+    const firstName = document.getElementById('editFirstName').value;
+    const lastName = document.getElementById('editLastName').value;
+    const address = document.getElementById('editAddress').value;
+
+    const result = await backend.updateTaxPayer(tid, firstName, lastName, address);
+    if (result) {
+        alert('TaxPayer updated successfully!');
+        document.getElementById('editModal').style.display = 'none';
+        displayTaxPayers();
+    } else {
+        alert('Failed to update TaxPayer. Please try again.');
+    }
+});
+
+// Close modal when clicking on <span> (x)
+document.querySelector('.close').addEventListener('click', () => {
+    document.getElementById('editModal').style.display = 'none';
+});
+
+// Close modal when clicking outside of it
+window.addEventListener('click', (e) => {
+    if (e.target == document.getElementById('editModal')) {
+        document.getElementById('editModal').style.display = 'none';
     }
 });
 

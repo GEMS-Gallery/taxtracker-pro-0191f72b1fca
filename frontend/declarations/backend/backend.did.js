@@ -7,8 +7,14 @@ export const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'addTaxPayer' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
+    'deleteTaxPayer' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'getAllTaxPayers' : IDL.Func([], [IDL.Vec(TaxPayer)], ['query']),
     'searchTaxPayer' : IDL.Func([IDL.Text], [IDL.Opt(TaxPayer)], ['query']),
+    'updateTaxPayer' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Bool],
+        [],
+      ),
   });
 };
 export const init = ({ IDL }) => { return []; };
