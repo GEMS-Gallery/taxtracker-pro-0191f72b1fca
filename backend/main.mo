@@ -55,7 +55,7 @@ actor {
     switch (taxPayers.remove(tid)) {
       case null { false };
       case (?_) { true };
-    }
+    };
   };
 
   // Function to update a TaxPayer record
@@ -72,6 +72,6 @@ actor {
         taxPayers.put(tid, updatedTaxPayer);
         true
       };
-    }
+    };
   };
 }
