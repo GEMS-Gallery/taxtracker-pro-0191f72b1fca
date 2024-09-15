@@ -80,20 +80,21 @@ actor {
 
   // Function to update a TaxPayer record
   public func updateTaxPayer(tid: Text, firstName: Text, lastName: Text, address: Text, spyShot: ?Text) : async Bool {
-    switch (taxPayers.get(trim(tid))) {
+    let trimmedTid = trim(tid);
+    switch (taxPayers.get(trimmedTid)) {
       case null { 
         Debug.print("Failed to update taxpayer with TID " # tid # ": not found");
         false 
       };
       case (?_) {
         let updatedTaxPayer : TaxPayer = {
-          tid = trim(tid);
+          tid = trimmedTid;
           firstName = trim(firstName);
           lastName = trim(lastName);
           address = trim(address);
           spyShot = spyShot;
         };
-        taxPayers.put(trim(tid), updatedTaxPayer);
+        taxPayers.put(trimmedTid, updatedTaxPayer);
         Debug.print("Updated taxpayer: " # debug_show(updatedTaxPayer));
         true
       };

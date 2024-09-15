@@ -66,8 +66,8 @@ document.getElementById('searchTaxPayerForm').addEventListener('submit', async (
         const result = await backend.searchTaxPayer(searchTid);
         const searchResult = document.getElementById('searchResult');
 
-        if (result) {
-            const taxPayer = result;
+        if (result && result.length > 0) {
+            const taxPayer = result[0];
             searchResult.innerHTML = `
                 <h3>Search Result:</h3>
                 <p><strong>TID:</strong> ${taxPayer.tid}</p>
