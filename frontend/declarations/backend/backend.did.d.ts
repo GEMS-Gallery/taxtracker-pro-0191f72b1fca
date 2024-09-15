@@ -19,7 +19,7 @@ export interface _SERVICE {
   'getAllTaxPayers' : ActorMethod<[], Array<TaxPayer>>,
   'searchTaxPayer' : ActorMethod<[string], TaxPayer>,
   'updateTaxPayer' : ActorMethod<
-    [string, string, string, string, [] | [string]],
+    [string, [] | [string], [] | [string], [] | [string], [] | [string]],
     boolean
   >,
 }

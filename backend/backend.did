@@ -12,5 +12,5 @@ service : {
   deleteTaxPayer: (text) -> (bool);
   getAllTaxPayers: () -> (vec TaxPayer) query;
   searchTaxPayer: (text) -> (TaxPayer) query;
-  updateTaxPayer: (text, text, text, text, opt text) -> (bool);
+  updateTaxPayer: (text, opt text, opt text, opt text, opt text) -> (bool);
 }

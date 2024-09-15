@@ -19,18 +19,28 @@ async function displayTaxPayers() {
                 <p><strong>Name:</strong> ${taxPayer.firstName} ${taxPayer.lastName}</p>
                 <p><strong>Address:</strong> ${taxPayer.address}</p>
                 ${taxPayer.spyShot ? `<img src="${taxPayer.spyShot}" alt="Spy Shot" class="spy-shot">` : ''}
-                <button class="edit-btn" data-tid="${taxPayer.tid}">Edit</button>
+                <button class="update-btn" data-tid="${taxPayer.tid}">Update</button>
                 <button class="delete-btn" data-tid="${taxPayer.tid}">Delete</button>
+                <form class="update-form" data-tid="${taxPayer.tid}">
+                    <input type="text" placeholder="First Name" value="${taxPayer.firstName}">
+                    <input type="text" placeholder="Last Name" value="${taxPayer.lastName}">
+                    <input type="text" placeholder="Address" value="${taxPayer.address}">
+                    <input type="text" placeholder="Spy Shot URL" value="${taxPayer.spyShot || ''}">
+                    <button type="submit">Save</button>
+                </form>
             `;
             taxPayerList.appendChild(div);
         });
 
-        // Add event listeners for edit and delete buttons
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', editTaxPayer);
+        // Add event listeners for update and delete buttons
+        document.querySelectorAll('.update-btn').forEach(btn => {
+            btn.addEventListener('click', toggleUpdateForm);
         });
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', deleteTaxPayer);
+        });
+        document.querySelectorAll('.update-form').forEach(form => {
+            form.addEventListener('submit', updateTaxPayer);
         });
     } catch (error) {
         console.error('Error displaying tax payers:', error);
@@ -102,45 +112,24 @@ async function deleteTaxPayer(e) {
     }
 }
 
-// Function to edit a tax payer
-async function editTaxPayer(e) {
-    const tid = trim(e.target.getAttribute('data-tid'));
-    try {
-        const taxPayer = await backend.searchTaxPayer(tid);
-        console.log('TaxPayer data:', taxPayer); // Debug log
-
-        if (taxPayer.tid !== "") {
-            document.getElementById('editTid').value = taxPayer.tid;
-            document.getElementById('editFirstName').value = taxPayer.firstName;
-            document.getElementById('editLastName').value = taxPayer.lastName;
-            document.getElementById('editAddress').value = taxPayer.address;
-            document.getElementById('editSpyShot').value = taxPayer.spyShot || '';
-            document.getElementById('editModal').style.display = 'block';
-        } else {
-            alert('Failed to load TaxPayer information. TaxPayer not found.');
-        }
-    } catch (error) {
-        console.error('Error loading tax payer for edit:', error);
-        alert('Failed to load tax payer information. Please try again.');
-    }
+// Function to toggle update form visibility
+function toggleUpdateForm(e) {
+    const tid = e.target.getAttribute('data-tid');
+    const form = document.querySelector(`.update-form[data-tid="${tid}"]`);
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
 }
 
 // Function to update a tax payer
-document.getElementById('editTaxPayerForm').addEventListener('submit', async (e) => {
+async function updateTaxPayer(e) {
     e.preventDefault();
-    const tid = trim(document.getElementById('editTid').value);
-    const firstName = trim(document.getElementById('editFirstName').value);
-    const lastName = trim(document.getElementById('editLastName').value);
-    const address = trim(document.getElementById('editAddress').value);
-    const spyShot = trim(document.getElementById('editSpyShot').value) || null;
+    const tid = e.target.getAttribute('data-tid');
+    const inputs = e.target.querySelectorAll('input');
+    const [firstName, lastName, address, spyShot] = Array.from(inputs).map(input => trim(input.value));
 
     try {
-        console.log('Updating tax payer with data:', { tid, firstName, lastName, address, spyShot });
-        const result = await backend.updateTaxPayer(tid, firstName, lastName, address, spyShot);
-        console.log('Update result:', result);
+        const result = await backend.updateTaxPayer(tid, firstName, lastName, address, spyShot || null);
         if (result) {
             alert('TaxPayer updated successfully!');
-            document.getElementById('editModal').style.display = 'none';
             displayTaxPayers();
         } else {
             alert('Failed to update TaxPayer. The TaxPayer may not exist.');
@@ -149,7 +138,7 @@ document.getElementById('editTaxPayerForm').addEventListener('submit', async (e)
         console.error('Error updating tax payer:', error);
         alert('An error occurred while updating the tax payer. Please try again.');
     }
-});
+}
 
 // Function to perform database cleanup
 document.getElementById('cleanupButton').addEventListener('click', async () => {
@@ -162,18 +151,6 @@ document.getElementById('cleanupButton').addEventListener('click', async () => {
             console.error('Error during database cleanup:', error);
             alert('Failed to perform database cleanup. Please try again.');
         }
-    }
-});
-
-// Close modal when clicking on <span> (x)
-document.querySelector('.close').addEventListener('click', () => {
-    document.getElementById('editModal').style.display = 'none';
-});
-
-// Close modal when clicking outside of it
-window.addEventListener('click', (e) => {
-    if (e.target == document.getElementById('editModal')) {
-        document.getElementById('editModal').style.display = 'none';
     }
 });
 
