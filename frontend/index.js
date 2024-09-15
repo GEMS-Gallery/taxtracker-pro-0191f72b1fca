@@ -108,13 +108,15 @@ async function editTaxPayer(e) {
     const tid = trim(e.target.getAttribute('data-tid'));
     try {
         const result = await backend.searchTaxPayer(tid);
+        console.log('Search result:', result); // Debug log
         if (result) {
             const taxPayer = result;
+            console.log('TaxPayer data:', taxPayer); // Debug log
             document.getElementById('editTid').value = taxPayer.tid;
             document.getElementById('editFirstName').value = taxPayer.firstName;
             document.getElementById('editLastName').value = taxPayer.lastName;
             document.getElementById('editAddress').value = taxPayer.address;
-            document.getElementById('editSpyShot').value = taxPayer.spyShot || '';
+            document.getElementById('editSpyShot').value = taxPayer.spyShot[0] || '';
             document.getElementById('editModal').style.display = 'block';
         } else {
             alert('Failed to load TaxPayer information. TaxPayer not found.');
