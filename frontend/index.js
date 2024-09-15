@@ -1,5 +1,10 @@
 import { backend } from 'declarations/backend';
 
+// Helper function to trim spaces
+function trim(str) {
+    return str.trim();
+}
+
 // Function to display all tax payers
 async function displayTaxPayers() {
     try {
@@ -35,10 +40,10 @@ async function displayTaxPayers() {
 // Function to add a new tax payer
 document.getElementById('addTaxPayerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const tid = document.getElementById('tid').value;
-    const firstName = document.getElementById('firstName').value;
-    const lastName = document.getElementById('lastName').value;
-    const address = document.getElementById('address').value;
+    const tid = trim(document.getElementById('tid').value);
+    const firstName = trim(document.getElementById('firstName').value);
+    const lastName = trim(document.getElementById('lastName').value);
+    const address = trim(document.getElementById('address').value);
 
     try {
         await backend.addTaxPayer(tid, firstName, lastName, address);
@@ -54,7 +59,7 @@ document.getElementById('addTaxPayerForm').addEventListener('submit', async (e) 
 // Function to search for a tax payer
 document.getElementById('searchTaxPayerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const searchTid = document.getElementById('searchTid').value;
+    const searchTid = trim(document.getElementById('searchTid').value);
     try {
         const result = await backend.searchTaxPayer(searchTid);
         const searchResult = document.getElementById('searchResult');
@@ -78,7 +83,7 @@ document.getElementById('searchTaxPayerForm').addEventListener('submit', async (
 
 // Function to delete a tax payer
 async function deleteTaxPayer(e) {
-    const tid = e.target.getAttribute('data-tid');
+    const tid = trim(e.target.getAttribute('data-tid'));
     if (confirm(`Are you sure you want to delete the tax payer with TID: ${tid}?`)) {
         try {
             const result = await backend.deleteTaxPayer(tid);
@@ -97,7 +102,7 @@ async function deleteTaxPayer(e) {
 
 // Function to edit a tax payer
 async function editTaxPayer(e) {
-    const tid = e.target.getAttribute('data-tid');
+    const tid = trim(e.target.getAttribute('data-tid'));
     try {
         const result = await backend.searchTaxPayer(tid);
         if (result && result.length > 0) {
@@ -119,10 +124,10 @@ async function editTaxPayer(e) {
 // Function to update a tax payer
 document.getElementById('editTaxPayerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const tid = document.getElementById('editTid').value;
-    const firstName = document.getElementById('editFirstName').value;
-    const lastName = document.getElementById('editLastName').value;
-    const address = document.getElementById('editAddress').value;
+    const tid = trim(document.getElementById('editTid').value);
+    const firstName = trim(document.getElementById('editFirstName').value);
+    const lastName = trim(document.getElementById('editLastName').value);
+    const address = trim(document.getElementById('editAddress').value);
 
     try {
         const result = await backend.updateTaxPayer(tid, firstName, lastName, address);

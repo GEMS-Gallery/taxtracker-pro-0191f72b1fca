@@ -30,21 +30,26 @@ actor {
     taxPayers := HashMap.fromIter<Text, TaxPayer>(taxPayerEntries.vals(), 1, Text.equal, Text.hash);
   };
 
+  // Helper function to trim spaces
+  private func trim(t : Text) : Text {
+    Text.trim(t, #char ' ')
+  };
+
   // Function to add a new TaxPayer record
   public func addTaxPayer(tid: Text, firstName: Text, lastName: Text, address: Text) : async () {
     let newTaxPayer : TaxPayer = {
-      tid = tid;
-      firstName = firstName;
-      lastName = lastName;
-      address = address;
+      tid = trim(tid);
+      firstName = trim(firstName);
+      lastName = trim(lastName);
+      address = trim(address);
     };
-    taxPayers.put(tid, newTaxPayer);
+    taxPayers.put(trim(tid), newTaxPayer);
     Debug.print("Added new taxpayer: " # debug_show(newTaxPayer));
   };
 
   // Function to search for a TaxPayer by TID
   public query func searchTaxPayer(tid: Text) : async ?TaxPayer {
-    let result = taxPayers.get(tid);
+    let result = taxPayers.get(trim(tid));
     Debug.print("Searched for taxpayer with TID " # tid # ": " # debug_show(result));
     result
   };
@@ -58,7 +63,7 @@ actor {
 
   // Function to delete a TaxPayer record
   public func deleteTaxPayer(tid: Text) : async Bool {
-    switch (taxPayers.remove(tid)) {
+    switch (taxPayers.remove(trim(tid))) {
       case null { 
         Debug.print("Failed to delete taxpayer with TID " # tid);
         false 
@@ -72,19 +77,19 @@ actor {
 
   // Function to update a TaxPayer record
   public func updateTaxPayer(tid: Text, firstName: Text, lastName: Text, address: Text) : async Bool {
-    switch (taxPayers.get(tid)) {
+    switch (taxPayers.get(trim(tid))) {
       case null { 
         Debug.print("Failed to update taxpayer with TID " # tid # ": not found");
         false 
       };
       case (?_) {
         let updatedTaxPayer : TaxPayer = {
-          tid = tid;
-          firstName = firstName;
-          lastName = lastName;
-          address = address;
+          tid = trim(tid);
+          firstName = trim(firstName);
+          lastName = trim(lastName);
+          address = trim(address);
         };
-        taxPayers.put(tid, updatedTaxPayer);
+        taxPayers.put(trim(tid), updatedTaxPayer);
         Debug.print("Updated taxpayer: " # debug_show(updatedTaxPayer));
         true
       };
