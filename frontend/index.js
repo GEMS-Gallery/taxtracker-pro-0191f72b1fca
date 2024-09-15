@@ -2,29 +2,34 @@ import { backend } from 'declarations/backend';
 
 // Function to display all tax payers
 async function displayTaxPayers() {
-    const taxPayers = await backend.getAllTaxPayers();
-    const taxPayerList = document.getElementById('taxPayerList');
-    taxPayerList.innerHTML = '';
+    try {
+        const taxPayers = await backend.getAllTaxPayers();
+        const taxPayerList = document.getElementById('taxPayerList');
+        taxPayerList.innerHTML = '';
 
-    taxPayers.forEach(taxPayer => {
-        const div = document.createElement('div');
-        div.innerHTML = `
-            <p><strong>TID:</strong> ${taxPayer.tid}</p>
-            <p><strong>Name:</strong> ${taxPayer.firstName} ${taxPayer.lastName}</p>
-            <p><strong>Address:</strong> ${taxPayer.address}</p>
-            <button class="edit-btn" data-tid="${taxPayer.tid}">Edit</button>
-            <button class="delete-btn" data-tid="${taxPayer.tid}">Delete</button>
-        `;
-        taxPayerList.appendChild(div);
-    });
+        taxPayers.forEach(taxPayer => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <p><strong>TID:</strong> ${taxPayer.tid}</p>
+                <p><strong>Name:</strong> ${taxPayer.firstName} ${taxPayer.lastName}</p>
+                <p><strong>Address:</strong> ${taxPayer.address}</p>
+                <button class="edit-btn" data-tid="${taxPayer.tid}">Edit</button>
+                <button class="delete-btn" data-tid="${taxPayer.tid}">Delete</button>
+            `;
+            taxPayerList.appendChild(div);
+        });
 
-    // Add event listeners for edit and delete buttons
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', editTaxPayer);
-    });
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', deleteTaxPayer);
-    });
+        // Add event listeners for edit and delete buttons
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', editTaxPayer);
+        });
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', deleteTaxPayer);
+        });
+    } catch (error) {
+        console.error('Error displaying tax payers:', error);
+        alert('Failed to load tax payers. Please try again.');
+    }
 }
 
 // Function to add a new tax payer
@@ -35,28 +40,39 @@ document.getElementById('addTaxPayerForm').addEventListener('submit', async (e) 
     const lastName = document.getElementById('lastName').value;
     const address = document.getElementById('address').value;
 
-    await backend.addTaxPayer(tid, firstName, lastName, address);
-    alert('TaxPayer added successfully!');
-    e.target.reset();
-    displayTaxPayers();
+    try {
+        await backend.addTaxPayer(tid, firstName, lastName, address);
+        alert('TaxPayer added successfully!');
+        e.target.reset();
+        displayTaxPayers();
+    } catch (error) {
+        console.error('Error adding tax payer:', error);
+        alert('Failed to add tax payer. Please try again.');
+    }
 });
 
 // Function to search for a tax payer
 document.getElementById('searchTaxPayerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const searchTid = document.getElementById('searchTid').value;
-    const result = await backend.searchTaxPayer(searchTid);
-    const searchResult = document.getElementById('searchResult');
+    try {
+        const result = await backend.searchTaxPayer(searchTid);
+        const searchResult = document.getElementById('searchResult');
 
-    if (result) {
-        searchResult.innerHTML = `
-            <h3>Search Result:</h3>
-            <p><strong>TID:</strong> ${result.tid}</p>
-            <p><strong>Name:</strong> ${result.firstName} ${result.lastName}</p>
-            <p><strong>Address:</strong> ${result.address}</p>
-        `;
-    } else {
-        searchResult.innerHTML = '<p>No TaxPayer found with the given TID.</p>';
+        if (result && result.length > 0) {
+            const taxPayer = result[0];
+            searchResult.innerHTML = `
+                <h3>Search Result:</h3>
+                <p><strong>TID:</strong> ${taxPayer.tid}</p>
+                <p><strong>Name:</strong> ${taxPayer.firstName} ${taxPayer.lastName}</p>
+                <p><strong>Address:</strong> ${taxPayer.address}</p>
+            `;
+        } else {
+            searchResult.innerHTML = '<p>No TaxPayer found with the given TID.</p>';
+        }
+    } catch (error) {
+        console.error('Error searching for tax payer:', error);
+        alert('Failed to search for tax payer. Please try again.');
     }
 });
 
@@ -64,12 +80,17 @@ document.getElementById('searchTaxPayerForm').addEventListener('submit', async (
 async function deleteTaxPayer(e) {
     const tid = e.target.getAttribute('data-tid');
     if (confirm(`Are you sure you want to delete the tax payer with TID: ${tid}?`)) {
-        const result = await backend.deleteTaxPayer(tid);
-        if (result) {
-            alert('TaxPayer deleted successfully!');
-            displayTaxPayers();
-        } else {
-            alert('Failed to delete TaxPayer. Please try again.');
+        try {
+            const result = await backend.deleteTaxPayer(tid);
+            if (result) {
+                alert('TaxPayer deleted successfully!');
+                displayTaxPayers();
+            } else {
+                alert('Failed to delete TaxPayer. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error deleting tax payer:', error);
+            alert('Failed to delete tax payer. Please try again.');
         }
     }
 }
@@ -77,15 +98,21 @@ async function deleteTaxPayer(e) {
 // Function to edit a tax payer
 async function editTaxPayer(e) {
     const tid = e.target.getAttribute('data-tid');
-    const taxPayer = await backend.searchTaxPayer(tid);
-    if (taxPayer) {
-        document.getElementById('editTid').value = taxPayer.tid;
-        document.getElementById('editFirstName').value = taxPayer.firstName;
-        document.getElementById('editLastName').value = taxPayer.lastName;
-        document.getElementById('editAddress').value = taxPayer.address;
-        document.getElementById('editModal').style.display = 'block';
-    } else {
-        alert('Failed to load TaxPayer information. Please try again.');
+    try {
+        const result = await backend.searchTaxPayer(tid);
+        if (result && result.length > 0) {
+            const taxPayer = result[0];
+            document.getElementById('editTid').value = taxPayer.tid;
+            document.getElementById('editFirstName').value = taxPayer.firstName;
+            document.getElementById('editLastName').value = taxPayer.lastName;
+            document.getElementById('editAddress').value = taxPayer.address;
+            document.getElementById('editModal').style.display = 'block';
+        } else {
+            alert('Failed to load TaxPayer information. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error loading tax payer for edit:', error);
+        alert('Failed to load tax payer information. Please try again.');
     }
 }
 
@@ -97,13 +124,18 @@ document.getElementById('editTaxPayerForm').addEventListener('submit', async (e)
     const lastName = document.getElementById('editLastName').value;
     const address = document.getElementById('editAddress').value;
 
-    const result = await backend.updateTaxPayer(tid, firstName, lastName, address);
-    if (result) {
-        alert('TaxPayer updated successfully!');
-        document.getElementById('editModal').style.display = 'none';
-        displayTaxPayers();
-    } else {
-        alert('Failed to update TaxPayer. Please try again.');
+    try {
+        const result = await backend.updateTaxPayer(tid, firstName, lastName, address);
+        if (result) {
+            alert('TaxPayer updated successfully!');
+            document.getElementById('editModal').style.display = 'none';
+            displayTaxPayers();
+        } else {
+            alert('Failed to update TaxPayer. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error updating tax payer:', error);
+        alert('Failed to update tax payer. Please try again.');
     }
 });
 
